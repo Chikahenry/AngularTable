@@ -8,19 +8,28 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit  {
-  title = 'angulartest';
+  title = 'Angulartest';
   apiUrl: string; 
+  showListOfUsers: boolean;
+  usersData: any;
+  dtOptions:  DataTables.Settings = {};
 
   constructor( 
     private httpClient: HttpClient, 
   ) {}
 
   ngOnInit(){
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+      pageLength: 5,
+      processing: true
+    };
+    
     this.getData()
   }
 
   getData() {
-    this.apiUrl = environment.AUTHAPIURL + "users";
+    this.apiUrl = environment.AUTHAPIURL + "users?page=2";
 
     const reqHeader = new HttpHeaders({
       "Content-Type": "application/json", 
@@ -29,9 +38,11 @@ export class AppComponent implements OnInit  {
 
     this.httpClient
       .get<any>(this.apiUrl, { headers: reqHeader })
-      .subscribe((data) => {
-        console.log(data); 
-        if (data.status === true) { 
+      .subscribe((res) => {
+        console.log(res); 
+        if (res.data.length > 0) { 
+          this.showListOfUsers = true
+          this.usersData = res.data
             alert("Data fetched successfully")
         } else {
           
